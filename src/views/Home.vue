@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <div>
       <input type="text" v-model="board_name">
       <button @click="createNewBoard">新しいボードを作成する</button>
@@ -10,16 +9,11 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 import firestore from '@/firebase/firestore'
 const boardsRef = firestore.collection('boards')
 
 export default {
   name: 'home',
-  components: {
-    HelloWorld
-  },
   data() {
     return {
       board_name: ""
