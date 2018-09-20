@@ -1,9 +1,13 @@
 <template>
   <div class="board">
     <h1>ボード名: {{ board_name }}</h1>
-    <div>
-      <input type="text" v-model="post_text">
-      <button @click="createNewPost">ポストイット！</button>
+    <div class="control">
+      <v-text-field
+        v-model="post_text"
+        label="アイデア"
+        outline
+      ></v-text-field>
+      <v-btn depressed small @click="createNewPost">post it!!</v-btn>
     </div>
     <div>
       <ul>
@@ -40,12 +44,6 @@ export default {
     })
 
     const postsRef = boardRef.collection('posts')
-    // postsRef.get().then((querySnapshot) => {
-    //   querySnapshot.forEach((doc) => {
-    //     this.posts.push(doc.data().text)
-    //   })
-    // })
-
     postsRef.onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(change => {
         this.posts.push(change.doc.data().text)
@@ -64,7 +62,7 @@ export default {
       postsRef.add({
         text: this.post_text
       }).then((docRef) => {
-        console.log("postしたよ！")
+        this.post_text = ""
       }).catch((error)  => {
         console.error('Error adding document: ', error)
       })
@@ -74,6 +72,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.control {
+  margin-top: 50px;
+}
+.v-input {
+  width: 300px;
+  margin: 0 auto;
+}
+.v-btn {
+  background: #eac545 !important;
+  color: white;
+}
 ul {
   display: flex;
   flex-wrap: wrap;
