@@ -2,12 +2,12 @@ import Firebase from 'firebase'
 import 'firebase/firestore'
 
 const config = {
-  apiKey: "AIzaSyCRU5GWEd3yJZWtHER_sptpucokk1F_YEw",
-  authDomain: "shakeb-55217.firebaseapp.com",
-  databaseURL: "https://shakeb-55217.firebaseio.com",
-  projectId: "shakeb-55217",
-  storageBucket: "shakeb-55217.appspot.com",
-  messagingSenderId: "744183415704"
+  apiKey: "AIzaSyDsfX78AL1octGmYIsg6bH-qWhMBUdAlmg",
+  authDomain: "hasso-2018.firebaseapp.com",
+  databaseURL: "https://hasso-2018.firebaseio.com",
+  projectId: "hasso-2018",
+  storageBucket: "hasso-2018.appspot.com",
+  messagingSenderId: "295572460052"
 }
 
 const firebaseApp = Firebase.initializeApp(config, 'exercise-vue')
