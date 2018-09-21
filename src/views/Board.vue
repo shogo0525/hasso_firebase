@@ -10,9 +10,13 @@
       <v-btn depressed small @click="createNewPost">post it!!</v-btn>
     </div>
     <div>
-      <ul>
+      <ul class="posts">
         <li v-for="post in posts" :key="post.id">
-          <p>{{ post }}</p>
+          <v-btn class="deleteBtn" @click="deletePost(post.id)"
+            fab dark small color="primary">
+            <v-icon dark>remove</v-icon>
+          </v-btn>
+          <p>{{ post.data().text }}</p>
         </li>
       </ul>
     </div>
@@ -26,13 +30,17 @@ export default {
   name: 'board_show',
   data() {
     return {
+      board_id: "",
       board_name: "",
       post_text: "",
       posts: []
     }
   },
   created() {
-    const boardRef = firestore.collection('boards').doc(this.$route.params.id)
+    this.post_id = this.$route.params.id;
+    const boardRef = firestore.collection('boards').doc(this.post_id)
+    const postsRef = boardRef.collection('posts')
+
     boardRef.get().then((doc) => {
       if (doc.exists) {
         this.board_name = doc.data().name
@@ -43,10 +51,13 @@ export default {
         console.log("Error getting document:", error);
     })
 
-    const postsRef = boardRef.collection('posts')
     postsRef.onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(change => {
-        this.posts.push(change.doc.data().text)
+        if (change.type == "added") { 
+          this.posts.push(change.doc)
+        } else if (change.type == "removed") {
+          this.posts = this.posts.filter(post => post.id !== change.doc.id);
+        }
       })
     })
   },
@@ -57,7 +68,7 @@ export default {
         return
       }
       
-      const boardRef = firestore.collection('boards').doc(this.$route.params.id)
+      const boardRef = firestore.collection('boards').doc(this.post_id)
       const postsRef = boardRef.collection('posts')
       postsRef.add({
         text: this.post_text
@@ -66,24 +77,34 @@ export default {
       }).catch((error)  => {
         console.error('Error adding document: ', error)
       })
+    },
+    deletePost(post_id) {
+      const boardRef = firestore.collection('boards').doc(this.post_id)
+      const postsRef = boardRef.collection('posts')
+      postsRef.doc(post_id).delete().then(function() {
+          console.log("Document successfully deleted!");
+      }).catch(function(error) {
+          console.error("Error removing document: ", error);
+      });
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.control {
-  margin-top: 50px;
-}
-.v-input {
-  width: 300px;
-  margin: 0 auto;
-}
 .v-btn {
   background: #eac545 !important;
   color: white;
 }
-ul {
+.control {
+  margin-top: 50px;
+  .v-input {
+    width: 300px;
+    margin: 0 auto;
+  }
+}
+
+.posts {
   display: flex;
   flex-wrap: wrap;
   li {
@@ -135,6 +156,11 @@ ul {
       text-align: center;
       color: white;
       font-weight: bold;
+    }
+    .deleteBtn {
+      position: absolute;
+      top: -20px;
+      left: -20px;
     }
   }
 }
