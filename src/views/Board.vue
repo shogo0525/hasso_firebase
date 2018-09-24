@@ -1,6 +1,16 @@
 <template>
   <div class="board">
-    <h1>ボード名: {{ board_name }}</h1>
+    <h1 v-show="!edit_board_name" @click="edit_board_name = true">ボード名: {{ board_name }}</h1>
+    <div v-show="edit_board_name">
+      <v-text-field
+        class="input_board_name"
+        v-model="board_name"
+        label="ボード名"
+        outline
+      ></v-text-field>
+      <v-btn depressed small @click="updateBoardname">変更</v-btn>
+    </div>
+
     <div class="control">
       <v-textarea
         v-model="post_text"
@@ -8,7 +18,7 @@
         label="アイデア"
         outline
       ></v-textarea>
-      <v-btn depressed small @click="createNewPost">post it!!</v-btn>
+      <v-btn depressed small @click="createNewPost">投稿</v-btn>
     </div>
     <div>
       <transition-group tag="ul" class="posts">
@@ -31,6 +41,7 @@ export default {
   name: 'board_show',
   data() {
     return {
+      edit_board_name: false,
       board_id: "",
       board_name: "",
       post_text: "",
@@ -42,14 +53,12 @@ export default {
     const boardRef = firestore.collection('boards').doc(this.post_id)
     const postsRef = boardRef.collection('posts')
 
-    boardRef.get().then((doc) => {
+    boardRef.onSnapshot((doc) => {
       if (doc.exists) {
         this.board_name = doc.data().name
       } else {
         console.log("No such document!")
       }
-    }).catch((error) =>  {
-        console.log("Error getting document:", error)
     })
 
     postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
@@ -63,6 +72,17 @@ export default {
     })
   },
   methods: {
+    updateBoardname() {
+      if (this.board_name.length == 0) {
+        alert("ボート名を入力してください")
+        return
+      }
+      const boardRef = firestore.collection('boards').doc(this.post_id)
+      boardRef.set({
+        name: this.board_name,
+      })
+      this.edit_board_name = false
+    },
     createNewPost() {
       if (this.post_text.length == 0) {
         alert("ポストを入力してください")
@@ -100,12 +120,15 @@ export default {
   background: #eac545 !important;
   color: white;
 }
+.v-input {
+  width: 300px;
+  margin: 0 auto;
+}
+.input_board_name {
+  display: inline-block;
+}
 .control {
-  margin-top: 40px;
-  .v-input {
-    width: 300px;
-    margin: 0 auto;
-  }
+  margin: 40px 0;
 }
 
 .posts {
