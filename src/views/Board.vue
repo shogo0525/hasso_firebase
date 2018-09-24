@@ -2,11 +2,12 @@
   <div class="board">
     <h1>ボード名: {{ board_name }}</h1>
     <div class="control">
-      <v-text-field
+      <v-textarea
         v-model="post_text"
+        rows="3"
         label="アイデア"
         outline
-      ></v-text-field>
+      ></v-textarea>
       <v-btn depressed small @click="createNewPost">post it!!</v-btn>
     </div>
     <div>
@@ -67,14 +68,16 @@ export default {
         alert("ポストを入力してください")
         return
       }
+      const post_text = this.post_text
+      this.post_text = ""
       
       const boardRef = firestore.collection('boards').doc(this.post_id)
       const postsRef = boardRef.collection('posts')
       postsRef.add({
-        text: this.post_text,
+        text: post_text,
         created_at: new Date()
       }).then((docRef) => {
-        this.post_text = ""
+        //
       }).catch((error)  => {
         console.error('Error adding document: ', error)
       })
@@ -98,7 +101,7 @@ export default {
   color: white;
 }
 .control {
-  margin-top: 50px;
+  margin-top: 40px;
   .v-input {
     width: 300px;
     margin: 0 auto;
@@ -120,7 +123,7 @@ export default {
     width: 150px;
     height: 150px;
     background: #cbb994;
-    margin: 10px;
+    margin: 10px 15px;
     list-style: none;
     p {
       position: absolute;
