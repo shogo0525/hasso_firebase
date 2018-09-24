@@ -10,7 +10,7 @@
       <v-btn depressed small @click="createNewPost">post it!!</v-btn>
     </div>
     <div>
-      <ul class="posts">
+      <transition-group tag="ul" class="posts">
         <li v-for="post in posts" :key="post.id">
           <v-btn class="deleteBtn" @click="deletePost(post.id)"
             fab dark small color="primary">
@@ -18,7 +18,7 @@
           </v-btn>
           <p>{{ post.data().text }}</p>
         </li>
-      </ul>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -107,6 +107,13 @@ export default {
 .posts {
   display: flex;
   flex-wrap: wrap;
+  .v-enter-active, .v-leave-active {
+    transition: all 1.2s;
+  }
+  .v-enter, .v-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
   li {
     position: relative;
     width: 150px;
@@ -114,37 +121,6 @@ export default {
     background: #cbb994;
     margin: 10px;
     list-style: none;
-
-    &:before, &:after
-    {
-      z-index: -1;
-      position: absolute;
-      content: "";
-      bottom: 15px;
-      left: 10px;
-      width: 50%;
-      top: 80%;
-      max-width:300px;
-      background: #777;
-      -webkit-box-shadow: 0 15px 10px #777;
-      -moz-box-shadow: 0 15px 10px #777;
-      box-shadow: 0 15px 10px #777;
-      -webkit-transform: rotate(-3deg);
-      -moz-transform: rotate(-3deg);
-      -o-transform: rotate(-3deg);
-      -ms-transform: rotate(-3deg);
-      transform: rotate(-3deg);
-    }
-    &:after
-    {
-      -webkit-transform: rotate(3deg);
-      -moz-transform: rotate(3deg);
-      -o-transform: rotate(3deg);
-      -ms-transform: rotate(3deg);
-      transform: rotate(3deg);
-      right: 10px;
-      left: auto;
-    }
     p {
       position: absolute;
       width: 100%;
