@@ -37,7 +37,7 @@ export default {
     }
   },
   created() {
-    this.post_id = this.$route.params.id;
+    this.post_id = this.$route.params.id
     const boardRef = firestore.collection('boards').doc(this.post_id)
     const postsRef = boardRef.collection('posts')
 
@@ -48,15 +48,15 @@ export default {
         console.log("No such document!")
       }
     }).catch((error) =>  {
-        console.log("Error getting document:", error);
+        console.log("Error getting document:", error)
     })
 
-    postsRef.onSnapshot((snapshot) => {
+    postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(change => {
         if (change.type == "added") { 
-          this.posts.push(change.doc)
+          this.posts.unshift(change.doc)
         } else if (change.type == "removed") {
-          this.posts = this.posts.filter(post => post.id !== change.doc.id);
+          this.posts = this.posts.filter(post => post.id !== change.doc.id)
         }
       })
     })
@@ -71,7 +71,8 @@ export default {
       const boardRef = firestore.collection('boards').doc(this.post_id)
       const postsRef = boardRef.collection('posts')
       postsRef.add({
-        text: this.post_text
+        text: this.post_text,
+        created_at: new Date()
       }).then((docRef) => {
         this.post_text = ""
       }).catch((error)  => {
@@ -82,10 +83,10 @@ export default {
       const boardRef = firestore.collection('boards').doc(this.post_id)
       const postsRef = boardRef.collection('posts')
       postsRef.doc(post_id).delete().then(function() {
-          console.log("Document successfully deleted!");
+          console.log("Document successfully deleted!")
       }).catch(function(error) {
-          console.error("Error removing document: ", error);
-      });
+          console.error("Error removing document: ", error)
+      })
     }
   }
 }
@@ -108,11 +109,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   .v-enter-active, .v-leave-active {
-    transition: all 1.2s;
+    transition: all 0.5s;
   }
   .v-enter, .v-leave-to {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(-30px);
   }
   li {
     position: relative;
