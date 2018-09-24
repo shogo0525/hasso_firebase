@@ -41,6 +41,8 @@ export default {
   name: 'board_show',
   data() {
     return {
+      boardRef: "",
+      postsRef: "",
       edit_board_name: false,
       board_id: "",
       board_name: "",
@@ -50,10 +52,10 @@ export default {
   },
   created() {
     this.post_id = this.$route.params.id
-    const boardRef = firestore.collection('boards').doc(this.post_id)
-    const postsRef = boardRef.collection('posts')
+    this.boardRef = firestore.collection('boards').doc(this.post_id)
+    this.postsRef = this.boardRef.collection('posts')
 
-    boardRef.onSnapshot((doc) => {
+    this.boardRef.onSnapshot((doc) => {
       if (doc.exists) {
         this.board_name = doc.data().name
       } else {
@@ -61,7 +63,7 @@ export default {
       }
     })
 
-    postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
+    this.postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(change => {
         if (change.type == "added") { 
           this.posts.unshift(change.doc)
@@ -77,8 +79,7 @@ export default {
         alert("ボート名を入力してください")
         return
       }
-      const boardRef = firestore.collection('boards').doc(this.post_id)
-      boardRef.set({
+      this.boardRef.set({
         name: this.board_name,
       })
       this.edit_board_name = false
@@ -91,9 +92,7 @@ export default {
       const post_text = this.post_text
       this.post_text = ""
       
-      const boardRef = firestore.collection('boards').doc(this.post_id)
-      const postsRef = boardRef.collection('posts')
-      postsRef.add({
+      this.postsRef.add({
         text: post_text,
         created_at: new Date()
       }).then((docRef) => {
@@ -103,9 +102,7 @@ export default {
       })
     },
     deletePost(post_id) {
-      const boardRef = firestore.collection('boards').doc(this.post_id)
-      const postsRef = boardRef.collection('posts')
-      postsRef.doc(post_id).delete().then(function() {
+      this.postsRef.doc(post_id).delete().then(function() {
           console.log("Document successfully deleted!")
       }).catch(function(error) {
           console.error("Error removing document: ", error)

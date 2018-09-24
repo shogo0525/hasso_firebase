@@ -23,7 +23,8 @@ export default {
   name: 'home',
   data() {
     return {
-      board_name: ""
+      board_name: "",
+      boards: ""
     }
   },
   created() {
