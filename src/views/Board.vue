@@ -13,11 +13,13 @@
 
     <div class="control">
       <v-textarea
+        @keydown.shift.enter="createNewPost"
         v-model="post_text"
         rows="3"
         label="アイデア"
         outline
       ></v-textarea>
+      <p>shift + enterで投稿</p>
       <v-btn depressed small @click="createNewPost">投稿</v-btn>
     </div>
     <div>
@@ -90,14 +92,14 @@ export default {
         return
       }
       const post_text = this.post_text
-      this.post_text = ""
+      
       
       this.postsRef.add({
         text: post_text,
         created_at: new Date()
       })
       .then((docRef) => {
-        //
+        this.post_text = ""
       })
       .catch((error)  => {
         console.error('Error adding document: ', error)
@@ -135,6 +137,9 @@ export default {
 }
 .control {
   margin: 40px 0;
+  p {
+    margin-top: -25px;
+  }
   .v-btn {
     background: #eac545 !important;
     color: white;
