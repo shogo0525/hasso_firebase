@@ -23,11 +23,11 @@
     <div>
       <transition-group tag="ul" class="posts">
         <li v-for="post in posts" :key="post.id">
+          <p>{{ post.data().text }}</p>
           <v-btn class="deleteBtn" @click="deletePost(post.id)"
-            fab dark small color="primary">
+            fab small color="white">
             <v-icon dark>remove</v-icon>
           </v-btn>
-          <p>{{ post.data().text }}</p>
         </li>
       </transition-group>
     </div>
@@ -95,9 +95,11 @@ export default {
       this.postsRef.add({
         text: post_text,
         created_at: new Date()
-      }).then((docRef) => {
+      })
+      .then((docRef) => {
         //
-      }).catch((error)  => {
+      })
+      .catch((error)  => {
         console.error('Error adding document: ', error)
       })
     },
@@ -107,16 +109,23 @@ export default {
       }).catch(function(error) {
           console.error("Error removing document: ", error)
       })
+    },
+    likePost(post_id) {
+      this.postsRef.doc(post_id).update({
+        like: 1
+      })
+      .then((docRef) => {
+        console.log(docRef)
+      })
+      .catch((error) =>{
+        console.error('Error adding document: ', error)
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.v-btn {
-  background: #eac545 !important;
-  color: white;
-}
 .v-input {
   width: 300px;
   margin: 0 auto;
@@ -126,6 +135,10 @@ export default {
 }
 .control {
   margin: 40px 0;
+  .v-btn {
+    background: #eac545 !important;
+    color: white;
+  }
 }
 
 .posts {
