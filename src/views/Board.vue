@@ -25,10 +25,15 @@
     <div>
       <transition-group tag="ul" class="posts">
         <li v-for="post in posts" :key="post.id">
-          <p>{{ post.data().text }}</p>
+          <p>{{ post.text }}</p>
           <v-btn class="deleteBtn" @click="deletePost(post.id)"
             fab small color="white">
             <v-icon dark>remove</v-icon>
+          </v-btn>
+          <v-btn class="likeBtn" @click="likePost(post.id)"
+            flat icon color="yellow">
+            <v-icon large>thumb_up</v-icon>
+            <span>{{ post.like }}</span>
           </v-btn>
         </li>
       </transition-group>
@@ -67,8 +72,19 @@ export default {
 
     this.postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
       snapshot.docChanges().forEach(change => {
-        if (change.type == "added") { 
-          this.posts.unshift(change.doc)
+        if (change.type == "added") {
+          let like = 0
+          if (change.doc.data().like) like = change.doc.data().like
+          const post = {
+            id: change.doc.id,
+            text: change.doc.data().text,
+            like: like
+          }
+          this.posts.unshift(post)
+        } else if (change.type == "modified") {
+          this.posts.filter(post => {
+            if(post.id == change.doc.id) post.like = change.doc.data().like
+          })
         } else if (change.type == "removed") {
           this.posts = this.posts.filter(post => post.id !== change.doc.id)
         }
@@ -93,35 +109,23 @@ export default {
       }
       const post_text = this.post_text
       
-      
       this.postsRef.add({
         text: post_text,
         created_at: new Date()
       })
-      .then((docRef) => {
-        this.post_text = ""
-      })
-      .catch((error)  => {
-        console.error('Error adding document: ', error)
-      })
+      .then((docRef) => this.post_text = "")
+      .catch((error)  => console.error('Error adding document: ', error))
     },
     deletePost(post_id) {
-      this.postsRef.doc(post_id).delete().then(function() {
-          console.log("Document successfully deleted!")
-      }).catch(function(error) {
-          console.error("Error removing document: ", error)
-      })
+      this.postsRef.doc(post_id).delete()
+      .catch((error) => console.error("Error removing document: ", error))
     },
     likePost(post_id) {
+      const post = this.posts.filter(post => post.id == post_id)
       this.postsRef.doc(post_id).update({
-        like: 1
+        like: post[0].like + 1
       })
-      .then((docRef) => {
-        console.log(docRef)
-      })
-      .catch((error) =>{
-        console.error('Error adding document: ', error)
-      })
+      .catch((error) =>console.error('Error adding document: ', error))
     }
   }
 }
@@ -179,6 +183,11 @@ export default {
       position: absolute;
       top: -20px;
       left: -20px;
+    }
+    .likeBtn {
+      position: absolute;
+      top: 105px;
+      left: 95px;
     }
   }
 }
