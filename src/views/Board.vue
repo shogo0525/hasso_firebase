@@ -22,6 +22,7 @@
       <p>shift + enterで投稿</p>
       <v-btn depressed small @click="createNewPost">投稿</v-btn>
     </div>
+
     <div>
       <transition-group tag="ul" class="posts">
         <li v-for="post in posts" :key="post.id">
@@ -30,6 +31,7 @@
             fab small color="white">
             <v-icon dark>remove</v-icon>
           </v-btn>
+          <span class="likeBar" :style="{ height: (post.like * 5) + 'px' }"></span>
           <v-btn class="likeBtn" @click="likePost(post.id)"
             flat icon color="yellow">
             <v-icon large>thumb_up</v-icon>
@@ -83,7 +85,9 @@ export default {
           this.posts.unshift(post)
         } else if (change.type == "modified") {
           this.posts.filter(post => {
-            if(post.id == change.doc.id) post.like = change.doc.data().like
+            if(post.id == change.doc.id) {
+              post.like = change.doc.data().like
+            }
           })
         } else if (change.type == "removed") {
           this.posts = this.posts.filter(post => post.id !== change.doc.id)
@@ -182,7 +186,15 @@ export default {
     .deleteBtn {
       position: absolute;
       top: -20px;
-      left: -20px;
+      right: -20px;
+    }
+    .likeBar {
+      display: block;
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 10px;
+      background: #eac545;
     }
     .likeBtn {
       position: absolute;
