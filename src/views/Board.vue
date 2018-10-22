@@ -16,7 +16,7 @@
         @keydown.shift.enter="createNewPost"
         v-model="post_text"
         rows="3"
-        label="アイデア"
+        label="アイデア・質問など"
         outline
       ></v-textarea>
       <p>shift + enterで投稿</p>
