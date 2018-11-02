@@ -16,7 +16,7 @@
         @keydown.shift.enter="createNewPost"
         v-model="post_text"
         rows="3"
-        label="アイデア・質問など"
+        label="アイデア・質問・感想・メモなど"
         outline
       ></v-textarea>
       <p>shift + enterで投稿</p>
@@ -27,10 +27,10 @@
       <transition-group tag="ul" class="posts">
         <li v-for="post in posts" :key="post.id">
           <p>{{ post.text }}</p>
-          <v-btn class="deleteBtn" @click="deletePost(post.id)"
+          <!-- <v-btn class="deleteBtn" @click="deletePost(post.id)"
             fab small color="white">
             <v-icon dark>remove</v-icon>
-          </v-btn>
+          </v-btn> -->
           <span class="likeBar" :style="{ height: (post.like * 5) + 'px' }"></span>
           <v-btn class="likeBtn" @click="likePost(post.id)"
             flat icon color="yellow">
