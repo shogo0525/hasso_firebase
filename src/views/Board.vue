@@ -117,7 +117,7 @@ export default {
         text: post_text,
         created_at: new Date()
       })
-      .then((docRef) => this.post_text = "")
+      .then(() => this.post_text = "")
       .catch((error)  => console.error('Error adding document: ', error)) // eslint-disable-line
     },
     deletePost(post_id) {
