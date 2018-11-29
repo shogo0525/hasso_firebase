@@ -68,7 +68,7 @@ export default {
       if (doc.exists) {
         this.board_name = doc.data().name
       } else {
-        console.log("No such document!")
+        console.log("No such document!") // eslint-disable-line
       }
     })
 
@@ -118,18 +118,18 @@ export default {
         created_at: new Date()
       })
       .then((docRef) => this.post_text = "")
-      .catch((error)  => console.error('Error adding document: ', error))
+      .catch((error)  => console.error('Error adding document: ', error)) // eslint-disable-line
     },
     deletePost(post_id) {
       this.postsRef.doc(post_id).delete()
-      .catch((error) => console.error("Error removing document: ", error))
+      .catch((error) => console.error("Error removing document: ", error)) // eslint-disable-line
     },
     likePost(post_id) {
       const post = this.posts.filter(post => post.id == post_id)
       this.postsRef.doc(post_id).update({
         like: post[0].like + 1
       })
-      .catch((error) =>console.error('Error adding document: ', error))
+      .catch((error) =>console.error('Error adding document: ', error)) // eslint-disable-line
     }
   }
 }
