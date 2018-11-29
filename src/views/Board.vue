@@ -37,7 +37,7 @@
             <v-icon large>thumb_up</v-icon>
             <span>{{ post.like }}</span>
           </v-btn>
-          <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank">
+          <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
             <img class="twitterImg" alt="twitter" src="../assets/twitter.png">
           </a>
         </li>
