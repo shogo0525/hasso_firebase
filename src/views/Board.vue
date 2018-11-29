@@ -37,6 +37,9 @@
             <v-icon large>thumb_up</v-icon>
             <span>{{ post.like }}</span>
           </v-btn>
+          <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank">
+            <img class="twitterImg" alt="twitter" src="../assets/twitter.png">
+          </a>
         </li>
       </transition-group>
     </div>
@@ -130,6 +133,9 @@ export default {
         like: post[0].like + 1
       })
       .catch((error) =>console.error('Error adding document: ', error)) // eslint-disable-line
+    },
+    getTwitterUrl(post_text) {
+      return 'https://twitter.com/intent/tweet?text=' + post_text + '&hashtags=Webナイト宮崎'
     }
   }
 }
@@ -198,8 +204,17 @@ export default {
     }
     .likeBtn {
       position: absolute;
-      top: 105px;
-      left: 95px;
+      top: 103px;
+      left: 25px;
+    }
+    .twitterBtn {
+      position: absolute;
+      top: 108px;
+      left: 108px;
+    }
+    .twitterImg {
+      width: 36px;
+      height: 36px;
     }
   }
 }
