@@ -30,7 +30,7 @@ export default {
   created() {
     boardsRef.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        console.log(doc.data())
+        console.log(doc.data()) // eslint-disable-line
       })
     })
   },
@@ -45,7 +45,7 @@ export default {
       }).then((docRef) => {
         this.$router.push({ name: 'board.show', params: { id: docRef.id }})
       }).catch((error) => {
-        console.log(`Error adding document: ${error}`)
+        console.log(`Error adding document: ${error}`) // eslint-disable-line
       })
     }
   }
