@@ -201,6 +201,7 @@ export default {
       left: 0px;
       width: 10px;
       background: #eac545;
+      opacity: 0.7;
     }
     .likeBtn {
       position: absolute;
