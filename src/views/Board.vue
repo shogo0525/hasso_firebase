@@ -172,8 +172,8 @@ export default {
   }
   li {
     position: relative;
-    width: 150px;
-    height: 150px;
+    width: 170px;
+    height: 170px;
     background: #cbb994;
     margin: 10px 15px;
     list-style: none;
@@ -204,13 +204,13 @@ export default {
     }
     .likeBtn {
       position: absolute;
-      top: 103px;
-      left: 25px;
+      top: 130px;
+      left: 15px;
     }
     .twitterBtn {
       position: absolute;
-      top: 108px;
-      left: 108px;
+      top: 132px;
+      right: 5px;
     }
     .twitterImg {
       width: 36px;
