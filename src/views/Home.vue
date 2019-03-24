@@ -12,26 +12,42 @@
       ></v-text-field>
       <v-btn depressed small @click="createNewBoard">ボードをつくる</v-btn>
     </div>
+
+    <div class="mt-3" v-if="admin">
+      <h4>アドミンスペース: {{ admin.email }}</h4>
+      <table class="mt-3 mr-auto ml-auto">
+        <tr v-for="board in boards" :key="board.id">
+          <td>{{ board.id }}</td>
+          <td><router-link :to="{ name: 'board.show', params: { id: board.id }}">{{ board.name }}</router-link></td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
-import firestore from '@/firebase/firestore'
-const boardsRef = firestore.collection('boards')
+import firebase from 'firebase'
+import { db } from '@/firebase/firestore'
+const boardsRef = db.collection('boards')
 
 export default {
   name: 'home',
   data() {
     return {
+      admin: null,
       board_name: "",
       boards: ""
     }
   },
   created() {
-    boardsRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        console.log(doc.data()) // eslint-disable-line
-      })
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        this.admin = user
+        const snapshot = await boardsRef.get()
+        this.boards = snapshot.docs.map(doc => {
+          return { id: doc.id, ...doc.data() }
+        })
+      }
     })
   },
   methods: {

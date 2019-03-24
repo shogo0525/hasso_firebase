@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import firestore from '@/firebase/firestore'
+import { db } from '@/firebase/firestore'
 
 export default {
   name: 'board_show',
@@ -64,7 +64,7 @@ export default {
   },
   created() {
     this.post_id = this.$route.params.id
-    this.boardRef = firestore.collection('boards').doc(this.post_id)
+    this.boardRef = db.collection('boards').doc(this.post_id)
     this.postsRef = this.boardRef.collection('posts')
 
     this.boardRef.onSnapshot((doc) => {

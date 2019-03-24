@@ -1,5 +1,4 @@
-import Firebase from 'firebase'
-import 'firebase/firestore'
+import firebase from 'firebase'
 
 const config = {
   apiKey: "AIzaSyDsfX78AL1octGmYIsg6bH-qWhMBUdAlmg",
@@ -10,8 +9,8 @@ const config = {
   messagingSenderId: "295572460052"
 }
 
-const firebaseApp = Firebase.initializeApp(config, 'exercise-vue')
-const firestore = firebaseApp.firestore()
-firestore.settings({ timestampsInSnapshots: true })
+firebase.initializeApp(config)
 
-export default firestore
+
+export const db = firebase.firestore()
+db.settings({ timestampsInSnapshots: true })
