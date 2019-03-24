@@ -3,5 +3,5 @@ import m from 'moment'
 
 Vue.filter('firebasets2Date', (value) => {
   if (!value) return ''
-  return m(value).format('YYYY/MM/DD')
+  return m(value.toDate()).format('YYYY/MM/DD')
 })

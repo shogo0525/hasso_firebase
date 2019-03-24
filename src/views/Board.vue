@@ -16,34 +16,49 @@
         @keydown.shift.enter="createNewPost"
         v-model="post_text"
         rows="3"
-        label="アイデア・質問・感想・メモなど"
+        label="メモ・感想、質問、アイデア・提案など"
         outline
       ></v-textarea>
-      <p>shift + enterで投稿</p>
+
+      <v-radio-group v-model="type" row class="radio-type">
+        <v-radio class="memo" label="メモ・感想" value="memo"></v-radio>
+        <v-radio class="question" label="質問" value="question"></v-radio>
+        <v-radio class="idea" label="アイデア・提案" value="idea"></v-radio>
+      </v-radio-group>
+
       <v-btn depressed small @click="createNewPost">投稿</v-btn>
+      <span>(shift + enterで投稿)</span>
     </div>
 
-    <div>
-      <transition-group tag="ul" class="posts">
-        <li v-for="post in posts" :key="post.id">
-          <p>{{ post.text }}</p>
-          <!-- <v-btn class="deleteBtn" @click="deletePost(post.id)"
-            fab small color="white">
-            <v-icon dark>remove</v-icon>
-          </v-btn> -->
-          <span class="likeBar" :style="{ height: (post.like * 5) + 'px' }"></span>
-          <v-btn class="likeBtn" @click="likePost(post.id)"
-            flat icon color="yellow">
-            <v-icon large>thumb_up</v-icon>
-            <span>{{ post.like }}</span>
-          </v-btn>
-          <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
-            <img class="twitterImg" alt="twitter" src="../assets/twitter.png">
-          </a>
-        </li>
-      </transition-group>
+    <hr>
+
+    <v-tabs v-model='viewTab' fixed-tabs class='hidden-xs-only'>
+      <v-tab><v-icon>view_module</v-icon></v-tab>
+      <v-tab><v-icon>view_list</v-icon></v-tab>
+    </v-tabs>
+
+    <div class="filter-types">
+      <v-checkbox v-model="filterTypes" label="メモ・感想" value="memo"></v-checkbox>
+      <v-checkbox v-model="filterTypes" label="質問" value="question"></v-checkbox>
+      <v-checkbox v-model="filterTypes" label="アイデア・提案" value="idea"></v-checkbox>
     </div>
-  </div>
+
+
+    <transition-group tag="ul" class="posts" :class="viewType">
+      <li v-for="post in filteredPosts" :key="post.id" :class="post.type">
+        <p>{{ post.text }}</p>
+        <span class="likeBar" :style="{ height: (post.like * 5) + 'px' }"></span>
+        <v-btn class="likeBtn" @click="likePost(post.id)"
+          flat icon color="yellow">
+          <v-icon large>thumb_up</v-icon>
+          <span>{{ post.like }}</span>
+        </v-btn>
+        <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
+          <img class="twitterImg" alt="twitter" src="../assets/twitter.png">
+        </a>
+      </li>
+    </transition-group>
+</div>
 </template>
 
 <script>
@@ -59,7 +74,10 @@ export default {
       edit_board_name: false,
       board: null,
       post_text: "",
-      posts: []
+      type: 'memo',
+      posts: [],
+      viewTab: 0,
+      filterTypes: ['memo', 'question', 'idea']
     }
   },
   created() {
@@ -68,6 +86,14 @@ export default {
 
     this.fetchBoard()
     this.fetchPosts()
+  },
+  computed: {
+    viewType() {
+      return this.viewTab === 0 ? 'grid-view' : 'list-view'
+    },
+    filteredPosts() {
+      return this.posts.filter(post => this.filterTypes.includes(post.type))
+    }
   },
   methods: {
     async fetchBoard() {
@@ -83,11 +109,7 @@ export default {
         snapshot.docChanges().forEach(change => {
           if (change.type === "added") {
             const like = change.doc.data().like || 0
-            const post = {
-              id: change.doc.id,
-              text: change.doc.data().text,
-              like
-            }
+            const post = { id: change.doc.id, like, ...change.doc.data() }
             this.posts.unshift(post)
           } else if (change.type === "modified") {
             const post = this.posts.find(post => post.id === change.doc.id)
@@ -117,6 +139,7 @@ export default {
       try {
         await this.postsRef.add({
           text: this.post_text,
+          type: this.type || 'memo',
           created_at: firebase.firestore.Timestamp.now()
         })
         this.post_text = ""
@@ -149,17 +172,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-input {
-  width: 300px;
-  margin: 0 auto;
+:root {
+  --post-color-memo: #cbb994;
+  --post-color-question: #ff8c00;
+  --post-color-idea: #8b4513;
 }
+
+ul {
+  padding: 0;
+}
+
 .input_board_name {
   display: inline-block;
 }
 .control {
-  margin: 40px 0;
-  p {
-    margin-top: -25px;
+  margin: 20px 0;
+  .v-input {
+    width: 400px;
+    margin: 0 auto;
+  }
+  .radio-type {
+    .v-radio { padding: 2px; }
+    .memo { border-bottom: 2px solid var(--post-color-memo); }
+    .question { border-bottom: 2px solid var(--post-color-question); }
+    .idea { border-bottom: 2px solid var(--post-color-idea); }
   }
   .v-btn {
     background: #eac545 !important;
@@ -167,22 +203,51 @@ export default {
   }
 }
 
-.posts {
+.filter-types {
+  .v-input {
+    width: 150px;
+    flex: none;
+  }
   display: flex;
-  flex-wrap: wrap;
-  .v-enter-active, .v-leave-active {
+  justify-content: center;
+}
+
+.posts {
+  &.grid-view {
+    display: flex;
+    flex-wrap: wrap;
+    li {
+      width: 180px;
+      height: 180px;
+      margin: 10px 15px;
+    }
+  }
+  &.list-view {
+    li {
+      width: 500px;
+      height: 130px;
+      margin: 10px auto;
+    }
+  }
+  .v-enter-active {
     transition: all 0.5s;
   }
-  .v-enter, .v-leave-to {
+  .v-enter {
     opacity: 0;
     transform: translateY(-30px);
   }
   li {
+    &.memo {
+      background: var(--post-color-memo);
+    }
+    &.question {
+      background: var(--post-color-question);
+    }
+    &.idea {
+      background: var(--post-color-idea);
+    }
+    background: var(--post-color-memo);
     position: relative;
-    width: 170px;
-    height: 170px;
-    background: #cbb994;
-    margin: 10px 15px;
     list-style: none;
     p {
       position: absolute;
@@ -207,22 +272,44 @@ export default {
       bottom: 0px;
       left: 0px;
       width: 10px;
-      background: #eac545;
-      opacity: 0.7;
+      background: white;
+      opacity: 0.8;
     }
     .likeBtn {
+      color: white !important;
       position: absolute;
-      top: 130px;
+      bottom: 0px;
       left: 15px;
     }
     .twitterBtn {
       position: absolute;
-      top: 132px;
+      bottom: 2px;
       right: 5px;
     }
     .twitterImg {
       width: 36px;
       height: 36px;
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .board {
+    padding: 10px;
+  }
+  .v-input {
+    width: 100%;
+  }
+  .posts {
+    &.grid-view {
+      li {
+        width: 100%;
+      }
+    }
+    &.list-view {
+      li {
+        width: 100%;
+      }
     }
   }
 }
