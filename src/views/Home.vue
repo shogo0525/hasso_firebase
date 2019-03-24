@@ -18,6 +18,7 @@
       <table class="mt-3 mr-auto ml-auto">
         <tr v-for="board in boards" :key="board.id">
           <td>{{ board.id }}</td>
+          <td>{{ board.created_at | timestamp2Date }}</td>
           <td><router-link :to="{ name: 'board.show', params: { id: board.id }}">{{ board.name }}</router-link></td>
           <!-- <td><button @click='deleteBoard(board.id)'>削除</button></td> -->
         </tr>
@@ -29,6 +30,7 @@
 <script>
 import firebase from 'firebase'
 import { db } from '@/firebase/firestore'
+
 const boardsRef = db.collection('boards')
 
 export default {
@@ -44,7 +46,7 @@ export default {
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         this.admin = user
-        const snapshot = await boardsRef.get()
+        const snapshot = await boardsRef.orderBy('created_at', 'desc').get()
         this.boards = snapshot.docs.map(doc => {
           return { id: doc.id, ...doc.data() }
         })
@@ -58,7 +60,8 @@ export default {
         return
       }
       boardsRef.add({
-        name: this.board_name
+        name: this.board_name,
+        created_at: firebase.firestore.Timestamp.now()
       }).then((docRef) => {
         this.$router.push({ name: 'board.show', params: { id: docRef.id }})
       }).catch((error) => {
@@ -73,7 +76,7 @@ export default {
       } catch (e) {
         console.log('error', e)
       }
-    }
+    },
   }
 }
 </script>
