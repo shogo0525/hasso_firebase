@@ -19,6 +19,7 @@
         <tr v-for="board in boards" :key="board.id">
           <td>{{ board.id }}</td>
           <td><router-link :to="{ name: 'board.show', params: { id: board.id }}">{{ board.name }}</router-link></td>
+          <!-- <td><button @click='deleteBoard(board.id)'>削除</button></td> -->
         </tr>
       </table>
     </div>
@@ -63,6 +64,15 @@ export default {
       }).catch((error) => {
         console.log(`Error adding document: ${error}`) // eslint-disable-line
       })
+    },
+    async deleteBoard(id) {
+      if (!this.admin) return
+      try {
+        boardsRef.doc(id).delete()
+        console.log("Document successfully deleted!")
+      } catch (e) {
+        console.log('error', e)
+      }
     }
   }
 }
