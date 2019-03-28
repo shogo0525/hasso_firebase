@@ -174,8 +174,8 @@ export default {
 <style lang="scss" scoped>
 :root {
   --post-color-memo: #cbb994;
-  --post-color-question: #ff8c00;
-  --post-color-idea: #8b4513;
+  --post-color-question: #87cefa;
+  --post-color-idea: #fa8072;
 }
 
 ul {
@@ -237,14 +237,11 @@ ul {
     transform: translateY(-30px);
   }
   li {
-    &.memo {
-      background: var(--post-color-memo);
-    }
     &.question {
-      background: var(--post-color-question);
+      border-bottom: 5px solid var(--post-color-question);
     }
     &.idea {
-      background: var(--post-color-idea);
+      border-bottom: 5px solid var(--post-color-idea);
     }
     background: var(--post-color-memo);
     position: relative;
@@ -283,7 +280,7 @@ ul {
     }
     .twitterBtn {
       position: absolute;
-      bottom: 2px;
+      bottom: 0px;
       right: 5px;
     }
     .twitterImg {
