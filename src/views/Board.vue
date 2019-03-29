@@ -107,13 +107,21 @@ export default {
     async fetchPosts() {
       this.postsRef.orderBy("created_at", "asc").onSnapshot((snapshot) => {
         snapshot.docChanges().forEach(change => {
+          const data = change.doc.data()
           if (change.type === "added") {
-            const like = change.doc.data().like || 0
-            const post = { id: change.doc.id, like, ...change.doc.data() }
+            const like = data.like || 0
+            const type = data.type || 'memo'
+            const post = {
+              id: change.doc.id,
+              text: data.text,
+              like,
+              type,
+              created_at: data.created_at
+            }
             this.posts.unshift(post)
           } else if (change.type === "modified") {
             const post = this.posts.find(post => post.id === change.doc.id)
-            post.like = change.doc.data().like
+            post.like = data.like
           } else if (change.type === "removed") {
             this.posts = this.posts.filter(post => post.id !== change.doc.id)
           }
@@ -296,6 +304,16 @@ ul {
   }
   .v-input {
     width: 100%;
+  }
+  .filter-types {
+    flex-flow: column;
+    align-items: center;
+    .v-input--selection-controls {
+      margin-top: 0px;
+      .v-input__slot {
+        margin-bottom: 0px;
+      }
+    }
   }
   .posts {
     &.grid-view {
