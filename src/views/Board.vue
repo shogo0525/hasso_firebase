@@ -1,64 +1,88 @@
 <template>
   <div v-if="board" class="board">
-    <h1 v-show="!edit_board_name" @click="edit_board_name = true">ボード名: {{ board.name }}</h1>
+    <h1
+      v-show="!edit_board_name"
+      @click="edit_board_name = true"
+      class="text-xl font-bold"
+    >
+      ボード名: {{ board.name }}
+    </h1>
     <div v-show="edit_board_name">
-      <v-text-field
-        class="input_board_name"
+      <input
         v-model="board.name"
-        label="ボード名"
-        outline
-      ></v-text-field>
-      <v-btn depressed small @click="updateBoardname">変更</v-btn>
+        class="mx-auto w-full sm:w-1/2 md:w-1/2 focus:outline-0 focus:shadow-outline border-2 border-gray-600 rounded p-4 block appearance-none leading-normal"
+        type="text"
+        placeholder="ボード名"
+      />
+      <button
+        @click="updateBoardname"
+        class="btn btn-gray mt-2"
+      >
+        変更
+      </button>
     </div>
 
-    <div class="control">
-      <v-textarea
-        @keydown.shift.enter="createNewPost"
+    <div class="my-5">
+      <textarea
         v-model="post_text"
-        rows="3"
-        label="メモ・感想、質問、アイデア・提案など"
-        outline
-      ></v-textarea>
+        @keydown.shift.enter="createNewPost"
+        class="mx-auto w-full sm:w-1/2 focus:outline-0 focus:shadow-outline border-2 border-gray-600 rounded p-4 block appearance-none leading-normal"
+        placeholder="メモ・感想、質問など"
+      ></textarea>
 
-      <v-radio-group v-model="type" row class="radio-type">
-        <v-radio class="memo" label="メモ・感想" value="memo"></v-radio>
-        <v-radio class="question" label="質問" value="question"></v-radio>
-        <v-radio class="idea" label="アイデア・提案" value="idea"></v-radio>
-      </v-radio-group>
+      <div class="mt-3 mx-auto flex justify-center text-white">
+        <label
+          for="memo"
+          :class="type === 'memo' ? 'border border-gray-700 bg-gray-600' : 'bg-gray-400'"
+          class="block p-1 shadow-md w-32 font-bold rounded-l"
+        >
+          <input v-model="type" type="radio" id="memo" value="memo" class="mr-2" hidden>
+          メモ・感想
+        </label>
+        <label
+          for="question"
+          :class="type === 'question' ? 'border border-gray-700 bg-gray-600' : 'bg-gray-400'"
+          class="block p-1 shadow-md w-32 font-bold rounded-r"
+        >
+          <input v-model="type" type="radio" id="question" value="question" class="mr-2" hidden>
+          質問
+        </label>
+      </div>
 
-      <v-btn depressed small @click="createNewPost">投稿</v-btn>
-      <span>(shift + enterで投稿)</span>
+      <button @click="createNewPost" class="btn btn-yellow mt-5 w-32">投稿</button>
+      <span class="block mt-1">(shift + enterで投稿)</span>
     </div>
 
-    <hr>
+    <hr class="my-5 h-1 bg-gray-300">
 
-    <v-tabs v-model='viewTab' fixed-tabs class='hidden-xs-only'>
-      <v-tab><v-icon>view_module</v-icon></v-tab>
-      <v-tab><v-icon>view_list</v-icon></v-tab>
-    </v-tabs>
-
-    <div class="filter-types">
-      <v-checkbox v-model="filterTypes" label="メモ・感想" value="memo"></v-checkbox>
-      <v-checkbox v-model="filterTypes" label="質問" value="question"></v-checkbox>
-      <v-checkbox v-model="filterTypes" label="アイデア・提案" value="idea"></v-checkbox>
-    </div>
-
-
-    <transition-group tag="ul" class="posts" :class="viewType">
-      <li v-for="post in filteredPosts" :key="post.id" :class="post.type">
-        <p>{{ post.text }}</p>
-        <span class="likeBar" :style="{ height: (post.like * 5) + 'px' }"></span>
-        <v-btn class="likeBtn" @click="likePost(post.id)"
-          flat icon color="yellow">
-          <v-icon large>thumb_up</v-icon>
-          <span>{{ post.like }}</span>
-        </v-btn>
-        <a :href="getTwitterUrl(post.text)" class="twitterBtn" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
-          <img class="twitterImg" alt="twitter" src="../assets/twitter.png">
-        </a>
+    <transition-group tag="ul" :class="viewType" class="posts sm:flex sm:flex-wrap">
+      <li
+        v-for="post in posts"
+        :key="post.id"
+        :class="`bg-${post.type}`"
+        class="rounded overflow-hidden shadow-lg text-white flex flex-col justify-between
+        w-full sm:min-w-xs sm:max-w-xs sm:w-auto
+        mt-2 sm:mr-2"
+      >
+        <div class="px-5 py-5">
+          <p class="text-base">{{ post.text }}</p>
+        </div>
+        <div class="px-2 flex justify-between">
+          <span class="inline-block">
+            <span @click="likePost(post)" class="inline-block mr-2">
+              <svg class="stroke-current fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 0h1v3l3 7v8a2 2 0 0 1-2 2H5c-1.1 0-2.31-.84-2.7-1.88L0 12v-2a2 2 0 0 1 2-2h7V2a2 2 0 0 1 2-2zm6 10h3v10h-3V10z"/></svg>
+            </span>
+            <span class="inline-block">{{ post.like }}</span>
+          </span>
+          <span class="inline-block">
+            <a :href="getTwitterUrl(post.text)" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
+              <img class="w-8 h-8" alt="twitter" src="../assets/twitter.png">
+            </a>
+          </span>
+        </div>
       </li>
     </transition-group>
-</div>
+  </div>
 </template>
 
 <script>
@@ -76,8 +100,6 @@ export default {
       post_text: "",
       type: 'memo',
       posts: [],
-      viewTab: 0,
-      filterTypes: ['memo', 'question', 'idea']
     }
   },
   created() {
@@ -90,9 +112,6 @@ export default {
   computed: {
     viewType() {
       return this.viewTab === 0 ? 'grid-view' : 'list-view'
-    },
-    filteredPosts() {
-      return this.posts.filter(post => this.filterTypes.includes(post.type))
     }
   },
   methods: {
@@ -128,15 +147,21 @@ export default {
         })
       })
     },
-    updateBoardname() {
+    async updateBoardname() {
       if (this.board.name.length == 0) {
         alert("ボート名を入力してください")
         return
       }
-      this.boardRef.set({
-        name: this.board.name,
-      }, { merge: true })
-      this.edit_board_name = false
+
+      try {
+        await this.boardRef.set({
+          name: this.board.name,
+        }, { merge: true })
+      } catch (e) {
+        console.error('Error adding document: ', e) // eslint-disable-line
+      } finally {
+        this.edit_board_name = false
+      }
     },
     async createNewPost() {
       if (this.post_text.length == 0) {
@@ -155,177 +180,37 @@ export default {
         console.error('Error adding document: ', e) // eslint-disable-line
       }
     },
-    deletePost(post_id) {
+    async deletePost(post_id) {
       try {
-        this.postsRef.doc(post_id).delete()
+        await this.postsRef.doc(post_id).delete()
       } catch (e) {
         console.error('Error removing document: ', e) // eslint-disable-line
       }
     },
-    likePost(post_id) {
+    async likePost(post) {
       try {
-        const post = this.posts.filter(post => post.id === post_id)
-        this.postsRef.doc(post_id).set({
-          like: post[0].like + 1
+        await this.postsRef.doc(post.id).set({
+          like: post.like + 1
         }, { merge: true })
       } catch (e) {
         console.error('Error liking document: ', e) // eslint-disable-line
       }
     },
     getTwitterUrl(post_text) {
-      return 'https://twitter.com/intent/tweet?text=' + post_text + '&hashtags=Webナイト宮崎'
+      return `https://twitter.com/intent/tweet?text=${post_text}&hashtags=Webナイト宮崎`
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-:root {
-  --post-color-memo: #cbb994;
-  --post-color-question: #87cefa;
-  --post-color-idea: #fa8072;
-}
-
-ul {
-  padding: 0;
-}
-
-.input_board_name {
-  display: inline-block;
-}
-.control {
-  margin: 20px 0;
-  .v-input {
-    width: 400px;
-    margin: 0 auto;
-  }
-  .radio-type {
-    .v-radio { padding: 2px; }
-    .memo { border-bottom: 2px solid var(--post-color-memo); }
-    .question { border-bottom: 2px solid var(--post-color-question); }
-    .idea { border-bottom: 2px solid var(--post-color-idea); }
-  }
-  .v-btn {
-    background: #eac545 !important;
-    color: white;
-  }
-}
-
-.filter-types {
-  .v-input {
-    width: 150px;
-    flex: none;
-  }
-  display: flex;
-  justify-content: center;
-}
-
 .posts {
-  &.grid-view {
-    display: flex;
-    flex-wrap: wrap;
-    li {
-      width: 180px;
-      height: 180px;
-      margin: 10px 15px;
-    }
-  }
-  &.list-view {
-    li {
-      width: 500px;
-      height: 130px;
-      margin: 10px auto;
-    }
-  }
   .v-enter-active {
     transition: all 0.5s;
   }
   .v-enter {
     opacity: 0;
     transform: translateY(-30px);
-  }
-  li {
-    &.question {
-      border-bottom: 5px solid var(--post-color-question);
-    }
-    &.idea {
-      border-bottom: 5px solid var(--post-color-idea);
-    }
-    background: var(--post-color-memo);
-    position: relative;
-    list-style: none;
-    p {
-      position: absolute;
-      width: 100%;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%,-50%);
-      -webkit-transform : translate(-50%,-50%);
-      transform : translate(-50%,-50%);
-      text-align: center;
-      color: white;
-      font-weight: bold;
-    }
-    .deleteBtn {
-      position: absolute;
-      top: -20px;
-      right: -20px;
-    }
-    .likeBar {
-      display: block;
-      position: absolute;
-      bottom: 0px;
-      left: 0px;
-      width: 10px;
-      background: white;
-      opacity: 0.8;
-    }
-    .likeBtn {
-      color: white !important;
-      position: absolute;
-      bottom: 0px;
-      left: 15px;
-    }
-    .twitterBtn {
-      position: absolute;
-      bottom: 0px;
-      right: 5px;
-    }
-    .twitterImg {
-      width: 36px;
-      height: 36px;
-    }
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .board {
-    padding: 10px;
-  }
-  .v-input {
-    width: 100%;
-  }
-  .filter-types {
-    flex-flow: column;
-    align-items: center;
-    .v-input--selection-controls {
-      margin-top: 0px;
-      .v-input__slot {
-        margin-bottom: 0px;
-      }
-    }
-  }
-  .posts {
-    &.grid-view {
-      li {
-        width: 100%;
-      }
-    }
-    &.list-view {
-      li {
-        width: 100%;
-      }
-    }
   }
 }
 </style>

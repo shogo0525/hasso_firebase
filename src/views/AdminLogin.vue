@@ -1,18 +1,23 @@
 <template>
   <div>
-    <v-flex xs12 sm6 md3 mr-auto ml-auto>
-      <v-text-field
-        v-model="email"
-        label="メールアドレス"
-      ></v-text-field>
-    </v-flex>
-    <v-flex xs12 sm6 md3 mr-auto ml-auto>
-      <v-text-field
-        v-model="password"
-        label="パスワード"
-      ></v-text-field>
-    </v-flex>
-    <v-btn @click="login">ログイン</v-btn>
+    <input
+      class="mx-auto w-64 focus:outline-0 focus:shadow-outline border-2 border-gray-600 rounded p-4 block appearance-none leading-normal"
+      type="email"
+      placeholder="メールアドレス"
+      v-model="email"
+    />
+    <input
+      class="mt-2 mx-auto w-64 focus:outline-0 focus:shadow-outline border-2 border-gray-600 rounded p-4 block appearance-none leading-normal"
+      type="password"
+      placeholder="パスワード"
+      v-model="password"
+    />
+    <button 
+      class="mt-3 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded"
+      @click="login"
+    >
+      ログイン
+    </button>
   </div>
 </template>
 
@@ -28,9 +33,9 @@ export default {
     }
   },
   methods: {
-    login() {
+    async login() {
       try {
-        firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+        await firebase.auth().signInWithEmailAndPassword(this.email, this.password)
         this.$router.push({ name: 'home' })
       } catch (e) {
         console.log('error', e) // eslint-disable-line
