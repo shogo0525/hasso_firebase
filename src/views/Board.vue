@@ -30,24 +30,7 @@
         placeholder="メモ・感想、質問など"
       ></textarea>
 
-      <div class="mt-3 mx-auto flex justify-center text-white">
-        <label
-          for="memo"
-          :class="type === 'memo' ? 'border border-gray-700 bg-gray-600' : 'bg-gray-400'"
-          class="block p-1 shadow-md w-32 font-bold rounded-l"
-        >
-          <input v-model="type" type="radio" id="memo" value="memo" class="mr-2" hidden>
-          メモ・感想
-        </label>
-        <label
-          for="question"
-          :class="type === 'question' ? 'border border-gray-700 bg-gray-600' : 'bg-gray-400'"
-          class="block p-1 shadow-md w-32 font-bold rounded-r"
-        >
-          <input v-model="type" type="radio" id="question" value="question" class="mr-2" hidden>
-          質問
-        </label>
-      </div>
+      <type-tab :types="types" :type="type" v-on:update-type="updateType" class="mt-3" />
 
       <button @click="createNewPost" class="btn btn-yellow mt-5 w-32">投稿</button>
       <span class="block mt-1">(shift + enterで投稿)</span>
@@ -55,42 +38,31 @@
 
     <hr class="my-5 h-1 bg-gray-300">
 
-    <transition-group tag="ul" :class="viewType" class="posts sm:flex sm:flex-wrap">
-      <li
+    <transition-group tag="ul" class="posts sm:flex sm:flex-wrap">
+      <post-item
         v-for="post in posts"
+        :post="post"
         :key="post.id"
-        :class="`bg-${post.type}`"
-        class="rounded overflow-hidden shadow-lg text-white flex flex-col justify-between
-        w-full sm:min-w-xs sm:max-w-xs sm:w-auto
-        mt-2 sm:mr-2"
-      >
-        <div class="px-5 py-5">
-          <p class="text-base">{{ post.text }}</p>
-        </div>
-        <div class="px-2 flex justify-between">
-          <span class="inline-block">
-            <span @click="likePost(post)" class="inline-block mr-2">
-              <svg class="stroke-current fill-current w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M11 0h1v3l3 7v8a2 2 0 0 1-2 2H5c-1.1 0-2.31-.84-2.7-1.88L0 12v-2a2 2 0 0 1 2-2h7V2a2 2 0 0 1 2-2zm6 10h3v10h-3V10z"/></svg>
-            </span>
-            <span class="inline-block">{{ post.like }}</span>
-          </span>
-          <span class="inline-block">
-            <a :href="getTwitterUrl(post.text)" target="_blank" onclick="window.open(this.href, 'tweetwindow', 'width=650, height=470, personalbar=0, toolbar=0, scrollbars=1, sizable=1'); return false;">
-              <img class="w-8 h-8" alt="twitter" src="../assets/twitter.png">
-            </a>
-          </span>
-        </div>
-      </li>
+        :postsRef="postsRef"
+        class="mt-2 sm:mr-2"
+      />
     </transition-group>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 import firebase from 'firebase'
 import { db } from '@/firebase/firestore'
+import TypeTab from '@/components/TypeTab'
+import PostItem from '@/components/PostItem'
 
 export default {
-  name: 'board-show',
+  name: 'board',
+  components: {
+    TypeTab,
+    PostItem
+  },
   data() {
     return {
       boardRef: "",
@@ -98,6 +70,10 @@ export default {
       edit_board_name: false,
       board: null,
       post_text: "",
+      types: [
+        { key: 'memo', value: 'メモ・感想' },
+        { key: 'question', value: '質問' },
+      ],
       type: 'memo',
       posts: [],
     }
@@ -109,12 +85,10 @@ export default {
     this.fetchBoard()
     this.fetchPosts()
   },
-  computed: {
-    viewType() {
-      return this.viewTab === 0 ? 'grid-view' : 'list-view'
-    }
-  },
   methods: {
+    updateType(type) {
+      this.type = type
+    },
     async fetchBoard() {
       const doc = await this.boardRef.get()
       if (!doc.exists) {
@@ -178,13 +152,6 @@ export default {
         this.post_text = ""
       } catch (e) {
         console.error('Error adding document: ', e) // eslint-disable-line
-      }
-    },
-    async deletePost(post_id) {
-      try {
-        await this.postsRef.doc(post_id).delete()
-      } catch (e) {
-        console.error('Error removing document: ', e) // eslint-disable-line
       }
     },
     async likePost(post) {

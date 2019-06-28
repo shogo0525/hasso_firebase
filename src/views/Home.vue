@@ -86,7 +86,6 @@ import { db } from '@/firebase/firestore'
 const boardsRef = db.collection('boards')
 
 export default {
-  name: 'home',
   data() {
     return {
       admin: null,

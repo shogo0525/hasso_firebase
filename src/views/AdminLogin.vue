@@ -25,7 +25,6 @@
 import firebase from 'firebase'
 
 export default {
-  name: 'admin-login',
   data() {
     return {
       email: "",

@@ -15,7 +15,7 @@ module.exports = {
     extend: {
       colors: {
         memo: '#cbb994',
-        question: '#87cefa',
+        question: '#ecc94b',
         idea: '#fa8072',
       }
     }
