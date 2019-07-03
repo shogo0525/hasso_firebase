@@ -33,7 +33,7 @@ export default {
         firebase.auth().signInWithEmailAndPassword(this.email, this.password)
         this.$router.push({ name: 'home' })
       } catch (e) {
-        console.log('error', e) // eslint-disable-line
+        console.log('error', e)
       }
     }
   }

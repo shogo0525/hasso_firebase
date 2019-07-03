@@ -88,7 +88,7 @@ export default {
       }).then((docRef) => {
         this.$router.push({ name: 'board.show', params: { id: docRef.id }})
       }).catch((error) => {
-        console.log(`Error adding document: ${error}`) // eslint-disable-line
+        console.log(`Error adding document: ${error}`)
       })
     },
     async deleteBoard(id) {

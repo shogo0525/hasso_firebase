@@ -152,14 +152,14 @@ export default {
         })
         this.post_text = ""
       } catch (e) {
-        console.error('Error adding document: ', e) // eslint-disable-line
+        console.error('Error adding document: ', e)
       }
     },
     deletePost(post_id) {
       try {
         this.postsRef.doc(post_id).delete()
       } catch (e) {
-        console.error('Error removing document: ', e) // eslint-disable-line
+        console.error('Error removing document: ', e)
       }
     },
     likePost(post_id) {
@@ -169,7 +169,7 @@ export default {
           like: post[0].like + 1
         }, { merge: true })
       } catch (e) {
-        console.error('Error liking document: ', e) // eslint-disable-line
+        console.error('Error liking document: ', e)
       }
     },
     getTwitterUrl(post_text) {
