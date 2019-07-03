@@ -31,7 +31,7 @@
           <td>{{ board.id }}</td>
           <td>{{ board.created_at | firebasets2Date }}</td>
           <td><router-link :to="{ name: 'board.show', params: { id: board.id }}">{{ board.name }}</router-link></td>
-          <!-- <td><button @click='deleteBoard(board.id)'>削除</button></td> -->
+          <td><button @click='deleteBoard(board.id)'>削除</button></td>
           <td>
             <v-btn v-if='!board.public' @click='publishBoard(board.id)'>一覧公開</v-btn>
             <v-btn v-else @click='unpublishBoard(board.id)'>非公開</v-btn>
