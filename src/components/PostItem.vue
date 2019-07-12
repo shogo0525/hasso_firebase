@@ -1,7 +1,7 @@
 <template>
   <li
     :class="`bg-${post.type}`"
-    class="rounded shadow-lg text-white flex flex-col justify-between
+    class="rounded shadow-lg text-white font-bold flex flex-col justify-between
     w-full sm:min-w-xs sm:max-w-xs sm:w-auto"
   >
     <div class="px-5 py-5">
