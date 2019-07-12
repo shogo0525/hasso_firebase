@@ -24,11 +24,20 @@
 
     <div class="mt-3">
       <h4>一覧公開されているボード</h4>
-      <table class="mt-3 mx-auto">
-        <tr v-for="board in publishedBoards" :key="board.id">
-          <td><router-link :to="{ name: 'board.show', params: { id: board.id }}">{{ board.name }}</router-link></td>
-        </tr>
-      </table>
+      <ul class="mt-3 mx-auto">
+        <li
+          v-for="board in publishedBoards"
+          :key="board.id"
+          class="mt-2"
+        >
+          <router-link
+            :to="{ name: 'board.show', params: { id: board.id }}"
+            class="underline"
+            >
+            {{ board.name }}
+          </router-link>
+        </li>
+      </ul>
     </div>
 
     <template v-if="admin">
